@@ -48,7 +48,7 @@ export const useGlobalStore = () => {
             case GlobalStoreActionType.CHANGE_LIST_NAME: {
                 return setStore({
                     idNamePairs: payload.idNamePairs,
-                    currentList: payload.top5List,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: false,
@@ -358,6 +358,20 @@ export const useGlobalStore = () => {
             }
         }
         asyncDeleteMarkedList();
+    }
+
+    store.hasTransactionToUndo = function () {
+        if(tps.hasTransactionToUndo()) {
+            return true;
+        }
+        return false;
+    }
+
+    store.hasTransactionToRedo = function () {
+        if(tps.hasTransactionToRedo()) {
+            return true;
+        }
+        return false;
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT

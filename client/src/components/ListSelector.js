@@ -23,6 +23,12 @@ const ListSelector = () => {
     }
 
     let listCard = "";
+    let isDisabled = "false";
+    let classNameButton = "top5-button";
+    if(store.isListNameEditActive) {
+        isDisabled = "true";
+        classNameButton = "top5-button-disabled"
+    }
     if (store) {
         listCard = store.idNamePairs.map((pair) => (
             <ListCard
@@ -36,9 +42,10 @@ const ListSelector = () => {
         <div id="top5-list-selector">
             <div id="list-selector-heading">
                 <input
+                    disabled={isDisabled}
                     type="button"
                     id="add-list-button"
-                    className="top5-button"
+                    className={classNameButton}
                     value="+"
                     onClick={handleClick} />
                 Your Lists

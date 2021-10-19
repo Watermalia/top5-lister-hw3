@@ -70,6 +70,12 @@ function Top5Item(props) {
 
     let { index } = props;
     let itemClass = "top5-item";
+    let listCardButtonClass = "list-card-button";
+    let isDisabled = false;
+    if(store.isItemEditActive) {
+        listCardButtonClass = "list-card-button-disabled";
+        isDisabled = true;
+    }
     if (draggedTo) {
         itemClass = "top5-item-dragged-to";
     }
@@ -85,9 +91,10 @@ function Top5Item(props) {
             draggable="true"
         >
             <input
+                disabled={isDisabled}
                 type="button"
                 id={"edit-item-" + index + 1}
-                className="list-card-button"
+                className={listCardButtonClass}
                 onClick={handleToggleEdit}
                 value={"\u270E"}
             />
