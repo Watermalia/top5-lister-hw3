@@ -104,6 +104,40 @@ export const useGlobalStore = () => {
     // DRIVE THE STATE OF THE APPLICATION. WE'LL CALL THESE IN 
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
 
+    store.createNewList = function () {
+
+        // Initialize a basic Untitled list
+        let newList = {
+            "name": "Untitled" + store.newListCounter,
+            "items": [
+                "?",
+                "?",
+                "?",
+                "?",
+                "?"
+            ]
+        };
+
+        // Send the list to the axios api to create the new untitled list
+        async function asyncCreateNewList() {
+            
+            let response = await api.createTop5List(newList);
+            if(response.data.success) {
+                let top5List = response.data.top5List;
+                
+                // Increment the store's newListCounter
+                store.newListCounter += 1;
+
+                // Open the new list's editing page
+                store.setCurrentList(top5List._id);
+            }
+            else {
+                console.log("API FAILED TO CREATE A LIST");
+            }
+        }
+        asyncCreateNewList();
+    }
+
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
     store.changeListName = function (id, newName) {
         // GET THE LIST
