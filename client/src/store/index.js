@@ -17,7 +17,9 @@ export const GlobalStoreActionType = {
     CLOSE_CURRENT_LIST: "CLOSE_CURRENT_LIST",
     LOAD_ID_NAME_PAIRS: "LOAD_ID_NAME_PAIRS",
     SET_CURRENT_LIST: "SET_CURRENT_LIST",
-    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE"
+    SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
+    MARK_LIST_FOR_DEL: "MARK_LIST_FOR_DEL",
+    DELETE_MARKED_LIST: "DELETE_MARKED_LIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -96,7 +98,7 @@ export const useGlobalStore = () => {
                     listMarkedForDeletion: null
                 });
             }
-            // STAST EDITING AN ITEM
+            // START EDITING AN ITEM
             case GlobalStoreActionType.SET_ITEM_EDIT_ACTIVE: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
@@ -104,6 +106,28 @@ export const useGlobalStore = () => {
                     newListCounter: store.newListCounter,
                     isListNameEditActive: false,
                     isItemEditActive: true,
+                    listMarkedForDeletion: null
+                });
+            }
+            // MARK A LIST FOR DELETION
+            case GlobalStoreActionType.MARK_LIST_FOR_DEL: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
+                    listMarkedForDeletion: payload
+                });
+            }
+            // DELETE THE MARKED LIST
+            case GlobalStoreActionType.DELETE_MARKED_LIST: {
+                return setStore({
+                    idNamePairs: payload,
+                    currentList: null,
+                    newListCounter: store.newListCounter,
+                    isListNameEditActive: false,
+                    isItemEditActive: false,
                     listMarkedForDeletion: null
                 });
             }
@@ -294,6 +318,42 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.SET_ITEM_EDIT_ACTIVE,
             payload: null
         });
+    }
+
+    store.showDeleteListModal = function () {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.add("is-visible");
+    }
+
+    store.hideDeleteListModal = function () {
+        let modal = document.getElementById("delete-modal");
+        modal.classList.remove("is-visible");
+    }
+
+    store.markListForDeletion = function (id) {
+        let markedList = null;
+        for(let i = 0; i < store.idNamePairs.length; i++) {
+            if(store.idNamePairs[i]._id === id) {
+                markedList = store.idNamePairs[i];
+            }
+        }
+        console.log(markedList);
+        storeReducer({
+            type: GlobalStoreActionType.MARK_LIST_FOR_DEL,
+            payload: markedList
+        });
+        console.log(store.listMarkedForDeletion);
+    }
+
+    store.deleteMarkedList = function () {
+        async function asyncDeleteMarkedList () {
+            let response = await api.deleteTop5ListById(store.listMarkedForDeletion._id);
+            if (response.data.success) {
+                store.loadIdNamePairs();
+                store.hideDeleteListModal();
+            }
+        }
+        asyncDeleteMarkedList();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
